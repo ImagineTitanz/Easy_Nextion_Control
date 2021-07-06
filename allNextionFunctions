@@ -7,7 +7,7 @@
 #include <SoftwareSerial.h>
 
 SoftwareSerial nextionSerial(3, 5);
-String nextionSerialData();
+void readNextionSerialData();
 void changeNextionObject(String object_to_change, String attribute_to_change, int attribute_new_value);
 void changeNextionObjectText(String object_to_change, String object_new_text);
 void jumpToNextionPage(String page_id);
@@ -22,10 +22,6 @@ void setup()
 
 void loop()
 {
-  if (nextionSerialData().substring(0, 19) == "[Nextion] modo_uso:")
-  {
-
-  }
 }
 
 void jumpToNextionPage(String page_to_jump) //Note: For a cleaner code, rename your HMI pages and use that String
@@ -61,7 +57,7 @@ void changeNextionObject(String object_to_change, String attribute_to_change, in
   nextionSerial.write(0xff);
 }
 
-String nextionSerialData()
+void readNextionSerialData()
 {
   String data_from_nextion = "";
   if (nextionSerial.isListening())
@@ -73,7 +69,10 @@ String nextionSerialData()
       {
         data_from_nextion += char(Serial.read());
       }
-      return data_from_nextion;
+      if (data_from_nextion.substring(0, 18) == "[Nextion]-keyword:")
+      {
+        global_variable_example = data_from_nextion.substring(18);
+      }
       delay(20);
     }
   }
