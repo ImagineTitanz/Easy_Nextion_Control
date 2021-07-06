@@ -1,0 +1,80 @@
+/**
+ * @author  ImagineTitanz (email:<rodrigoriverabecerril@hotmail.com>)
+ * @date    2021/07/06
+ */
+
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+
+SoftwareSerial nextionSerial(3, 5);
+String nextionSerialData();
+void changeNextionObject(String object_to_change, String attribute_to_change, int attribute_new_value);
+void changeNextionObjectText(String object_to_change, String object_new_text);
+void jumpToNextionPage(String page_id);
+
+String global_variable_example = "";
+
+void setup()
+{
+  nextionSerial.begin(9600);
+  nextionSerial.listen();
+}
+
+void loop()
+{
+  if (nextionSerialData().substring(0, 19) == "[Nextion] modo_uso:")
+  {
+
+  }
+}
+
+void jumpToNextionPage(String page_to_jump) //Note: For a cleaner code, rename your HMI pages and use that String
+{
+  nextionSerial.print("page ");
+  nextionSerial.print(page_to_jump);
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+}
+
+void changeNextionObjectText(String object_to_change, String object_new_text)
+{
+  nextionSerial.print(object_to_change);
+  nextionSerial.print(".txt=");
+  nextionSerial.print("\"");
+  nextionSerial.print(object_new_text);
+  nextionSerial.print("\"");
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+}
+
+void changeNextionObject(String object_to_change, String attribute_to_change, int attribute_new_value)
+{
+  nextionSerial.print(object_to_change);
+  nextionSerial.print(".");
+  nextionSerial.print(attribute_to_change);
+  nextionSerial.print("=");
+  nextionSerial.print(attribute_new_value);
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+  nextionSerial.write(0xff);
+}
+
+String nextionSerialData()
+{
+  String data_from_nextion = "";
+  if (nextionSerial.isListening())
+  {
+    if (nextionSerial.available() > 0)
+    {
+      delay(30);
+      while (Serial.available())
+      {
+        data_from_nextion += char(Serial.read());
+      }
+      return data_from_nextion;
+      delay(20);
+    }
+  }
+}
